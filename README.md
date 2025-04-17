@@ -30,4 +30,12 @@ Expected Payload:
 ```
 
 ## Database Models
-I will create 3 tables, Users, TransactionTypes, AlertCodes
+I will create 4 tables, Users, TransactionTypes, AlertCodes and Transactions
+
+Users should be self explanatory
+
+TransactionTypes is for future transaction types, perhaps there may be more than just deposit and withdrawal
+
+Alert Codes for a list of the type of records to match against
+
+Transactions for recording user transactions

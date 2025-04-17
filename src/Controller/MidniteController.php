@@ -86,6 +86,10 @@ class MidniteController extends AppController
 
         $transaction = $this->Transactions->patchEntity($transaction, $entityData);
 
+        if ($this->Transactions->save($transaction)) {
+            dd('Great!');
+        }
+
         dd($transaction);
     }
 }
