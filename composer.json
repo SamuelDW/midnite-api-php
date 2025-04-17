@@ -45,7 +45,13 @@
         "cs-check": "phpcs --colors -p",
         "cs-fix": "phpcbf --colors -p",
         "stan": "phpstan analyse",
-        "test": "phpunit --colors=always"
+        "test": "phpunit --colors=always",
+        "migrate": "bin/cake migrations migrate",
+        "seed": "bin/cake migrations seed --seed DatabaseSeed",
+        "initialise": [
+            "@migrate",
+            "@seed"
+        ]
     },
     "prefer-stable": true,
     "config": {
