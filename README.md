@@ -8,6 +8,7 @@ This technical test is to build an API that takes in a user id, action and amoun
 2. Time is in seconds
 3. That for code 123, it does not matter if the deposit amount is not consecutive, if it fits into a 30 second window, it should error. Withdrawals still count towards the time limit
 4. Users should not be able to withdraw into a negative balance.
+5. Time must be greater than 0, 0 is usually treated as a null value in most languages
 
 ## Setting the project up
 
