@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use Migrations\BaseMigration;
 
-class CreateUsers extends BaseMigration
+class CreateTransactions extends BaseMigration
 {
     /**
      * Change Method.
@@ -14,24 +14,28 @@ class CreateUsers extends BaseMigration
      */
     public function change(): void
     {
-        $table = $this->table('users', [
+        $table = $this->table('transactions');
+        $table->addColumn('user_id', 'integer', [
+            'default' => null,
+            'limit' => 11,
+            'null' => false,
             'signed' => false,
         ]);
-        $table->addColumn('name', 'string', [
+        $table->addForeignKey('user_id', 'users');
+        $table->addColumn('transaction_type_id', 'integer', [
             'default' => null,
-            'limit' => 255,
+            'limit' => 11,
+            'null' => false,
+            'signed' => false,
+        ]);
+        $table->addForeignKey('transaction_type_id', 'transaction_types');
+        $table->addColumn('amount', 'float', [
+            'default' => null,
             'null' => false,
         ]);
-        $table->addColumn('total', 'float', [
+        $table->addColumn('time', 'integer', [
             'default' => null,
-            'null' => false,
-        ]);
-        $table->addColumn('created', 'datetime', [
-            'default' => null,
-            'null' => false,
-        ]);
-        $table->addColumn('modified', 'datetime', [
-            'default' => null,
+            'limit' => 11,
             'null' => false,
         ]);
         $table->create();

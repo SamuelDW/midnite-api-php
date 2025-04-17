@@ -14,7 +14,9 @@ class CreateTransactionTypes extends BaseMigration
      */
     public function change(): void
     {
-        $table = $this->table('transaction_types');
+        $table = $this->table('transaction_types', [
+            'signed' => false,
+        ]);
         $table->addColumn('name', 'string', [
             'default' => null,
             'limit' => 255,

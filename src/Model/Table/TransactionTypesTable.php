@@ -7,6 +7,7 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use \App\Model\Entity\TransactionType;
 
 /**
  * TransactionTypes Model
@@ -57,5 +58,18 @@ class TransactionTypesTable extends Table
             ->notEmptyString('name');
 
         return $validator;
+    }
+
+    /**
+     * @param string $name the name of the deposit type
+     * 
+     * @return \App\Model\Entity\TransactionType
+     */
+    public function getTransactionTypeByName(string $name): TransactionType
+    {
+        return $this->find()
+            ->where(['name = :name'])
+            ->bind(':name', $name, 'string') // Binding as right hand value is not parameterized and this function may be accessed by third party vendors
+            ->first();
     }
 }

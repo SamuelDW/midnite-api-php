@@ -14,7 +14,9 @@ class CreateAlertCodes extends BaseMigration
      */
     public function change(): void
     {
-        $table = $this->table('alert_codes');
+        $table = $this->table('alert_codes', [
+            'signed' => false,
+        ]);
         $table->addColumn('code', 'integer', [
             'default' => null,
             'limit' => 11,
