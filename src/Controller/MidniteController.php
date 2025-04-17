@@ -57,7 +57,7 @@ class MidniteController extends AppController
 
         // Check all fields are present, otherwise throw an error
         if (empty($data['user_id']) || empty($data['type']) || empty($data['amount']) || empty($data['time'])) {
-            throw new BadRequestException('Missing required fields: Fields neeed are user_id, type, amount and time');
+            return $this->returnErrorResponse(403, 'Invalid Request');
         }
 
         $userId = $data['user_id'];
@@ -67,23 +67,16 @@ class MidniteController extends AppController
         try {
             $user = $this->Users->get($userId);
         } catch (Exception $e) {
-            $response = json_encode([
-                'error' => 'User not found',
-                'code' => 404,
-            ]);
-            return $this->response->withStatus(404)->withStringBody($response);
+            return $this->returnErrorResponse(404, 'User not found');
         }
 
         // Determine if the transaction type is an allowed method
         try {
             $transactionMethod = $this->TransactionTypes->getTransactionTypeByName($transactionType);
         } catch (Exception $e) {
-            $response = json_encode([
-                'error' => 'Unknown transaction type',
-                'code' => 404,
-                'message' => 'Accepted Types are deposit or withdrawal'
+            return $this->returnErrorResponse(404, 'Transaction type not recognised', [
+                'accepted_methods' => ['deposit', 'withdrawal']
             ]);
-            return $this->response->withStatus(404)->withStringBody($response);
         }
 
         // Create the transaction and save it
@@ -150,5 +143,13 @@ class MidniteController extends AppController
         ]);
 
         return $this->response->withStringBody($response)->withStatus(200)->withType('application/json');
+    }
+
+    private function returnErrorResponse(int $code, string $message, array $extra = [])
+    {
+        return $this->response->withStatus($code)->withStringBody(json_encode(array_merge([
+            'error' => $message,
+            'code' => $code,
+        ], $extra)));
     }
 }

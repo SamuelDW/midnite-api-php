@@ -14,6 +14,14 @@ This technical test is to build an API that takes in a user id, action and amoun
 1. Apache
 2. PHP 8.2
 3. MariaDB/MySQL.
+4. Either Postman or CLI
+
+### Setup
+1. Download the folder, or clone from GitHub into an empty folder.
+2. Create a table in your database called `midnite_api_php`.
+2. Run the command `composer install`.
+3. Run the command `composer initialise` this will set up the database and seed some data into the relevant tables.
+4. The project should be started using `bin/cake server` after navigating to the project location in the command line.
 
 
 ## Routes
@@ -37,6 +45,7 @@ Users should be self explanatory
 TransactionTypes is for future transaction types, perhaps there may be more than just deposit and withdrawal
 
 Alert Codes for a list of the type of records to match against
+Addendum, as it turns out, couldn't quite figure why this was needed, potentially could just be a table for info or later it could be improved with conditions attached to each. 
 
 Transactions for recording user transactions
 
@@ -45,12 +54,15 @@ Transactions for recording user transactions
 
 1. Define what information needed recording to be able to complete checks.
 2. Setup the CakePHP project.
+3. Get the initial request working, confirming that the event is being hit.
 
 
 ### Issues and challenges. 
 1. No idea why, a new project wasn't allowing the type hinting to function properly.
+2. The deposit in a certain amount of time, I've assumed this was in seconds, rather than anything else, if it was in milliseconds, of course the function that deals with this could be handled to deal with milliseconds, or a boolean flag to determine time frames
 
 
 ### Possible Improvements
 
-1. Could potentially do the transaction and in the background check the account, utilising a 202 response
+1. Could potentially do the transaction and in the background check the account, utilising a 202 response and return the full response after it has done processing
+2. In regards to point one, each check could be its own process, and in languages such as Python and JavaScript, make use of async abilities to improve the response speed
