@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\AlertCodesTable;
+use App\Test\TestHelperTrait;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -11,6 +12,8 @@ use Cake\TestSuite\TestCase;
  */
 class AlertCodesTableTest extends TestCase
 {
+    use TestHelperTrait;
+
     /**
      * Test subject
      *
@@ -59,6 +62,16 @@ class AlertCodesTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->defaultTestAccessible($this->AlertCodes);
+
+        $this->defaultTestValidEntity($this->AlertCodes, [
+            'code' => 1999,
+            'reason' => 'Testing'
+        ]);
+
+        $this->defaultTestInvalidEntity($this->AlertCodes, [
+            'code' => null,
+            'reason' => null
+        ]);
     }
 }

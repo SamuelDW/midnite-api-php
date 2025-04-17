@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\UsersTable;
+use App\Test\TestHelperTrait;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -11,6 +12,8 @@ use Cake\TestSuite\TestCase;
  */
 class UsersTableTest extends TestCase
 {
+    use TestHelperTrait;
+
     /**
      * Test subject
      *
@@ -59,6 +62,17 @@ class UsersTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->defaultTestAccessible($this->Users);
+
+        $this->defaultTestValidEntity($this->Users, [
+            'name' => 'Samuel',
+            'total' => 1000,
+            'created' => date('Y-m-d H:i:s'),
+            'modified' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->defaultTestInvalidEntity($this->Users, [
+            'total' => 'Im bored',
+        ]);
     }
 }

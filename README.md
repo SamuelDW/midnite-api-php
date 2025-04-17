@@ -69,6 +69,7 @@ Transactions for recording user transactions
 4. Start writing the tests for expected responses and expected failures
 5. Started writing defensively, making sure that values are as expected, and returning an error response if something didn't match. 
 6. Started on the checks, I started with the easiest, code 1100, as this only depended on the current input. Then I followed with 30 and 300, as these both depended on deposits and withdrawals consecutively, which was easier to implement with a limit on transactions pulled from the database.
+7. Finished off all the tests for the tables
 
 
 ### Issues and challenges. 

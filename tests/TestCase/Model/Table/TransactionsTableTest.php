@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\TransactionsTable;
+use App\Test\TestHelperTrait;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -11,6 +12,8 @@ use Cake\TestSuite\TestCase;
  */
 class TransactionsTableTest extends TestCase
 {
+    use TestHelperTrait;
+
     /**
      * Test subject
      *
@@ -61,7 +64,20 @@ class TransactionsTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->defaultTestAccessible($this->Transactions);
+
+        $this->defaultTestValidEntity($this->Transactions, [
+            'user_id' => 1,
+            'amount' => 10,
+            'time' => 3,
+            'transaction_type_id' => 1,
+        ]);
+
+        $this->defaultTestInvalidEntity($this->Transactions, [
+            'user_id' => 1,
+            'amount' => null,
+            'time' => 3,
+        ]);
     }
 
     /**
@@ -72,6 +88,24 @@ class TransactionsTableTest extends TestCase
      */
     public function testBuildRules(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $validEntity = $this->Transactions->newEntity([
+            'user_id' => 1,
+            'amount' => 10,
+            'time' => 3,
+            'transaction_type_id' => 1,
+        ]);
+        $this->defaultTestForeignKeysValid($this->Transactions, $validEntity);
+
+
+        $invalidEntity = $this->Transactions->newEntity([
+            'user_id' => 100,
+            'amount' => 10,
+            'time' => 3,
+            'transaction_type_id' => 100,
+        ]);
+        $this->defaultTestForeignKeyErrors($this->Transactions, $invalidEntity, [
+            'user_id',
+            'transaction_type_id'
+        ]);
     }
 }

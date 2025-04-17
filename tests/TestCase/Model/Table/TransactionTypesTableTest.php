@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\TransactionTypesTable;
+use App\Test\TestHelperTrait;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -11,6 +12,8 @@ use Cake\TestSuite\TestCase;
  */
 class TransactionTypesTableTest extends TestCase
 {
+    use TestHelperTrait;
+
     /**
      * Test subject
      *
@@ -59,6 +62,14 @@ class TransactionTypesTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->defaultTestSimpleIdNameValidation($this->TransactionTypes);
+
+        $this->defaultTestValidEntity($this->TransactionTypes, [
+            'name' => 'Test'
+        ]);
+
+        $this->defaultTestInvalidEntity($this->TransactionTypes, [
+            'name' => null,
+        ]);
     }
 }
