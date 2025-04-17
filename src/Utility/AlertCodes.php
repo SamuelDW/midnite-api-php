@@ -6,6 +6,7 @@ namespace App\Utility;
 
 use \App\Model\Entity\Transaction;
 use \App\Model\Entity\TransactionType;
+use App\Model\Table\TransactionTypesTable;
 
 class AlertCodes
 {
@@ -75,7 +76,7 @@ class AlertCodes
         }
 
         // If the first deposit is too much, don't waste time looping
-        if ($transactions[0]->amount > 200) {
+        if ($transactions[0]->amount > 200 && $transactions[0]->transaction_type_id === TransactionTypesTable::DEPOSIT_ID) {
             return true;
         }
 
@@ -84,11 +85,15 @@ class AlertCodes
 
         foreach ($transactions as $transaction) {
             $time += $transaction->time;
-            $depositAmount += $transaction->amount;
+            $depositAmount += $transaction->transaction_type_id === TransactionTypesTable::DEPOSIT_ID
+                ? $transaction->amount
+                : 0;
 
             // as soon as time is 30 or more and amount is over 200 return
             if ($time >= 30 && $depositAmount > 200) {
                 return true;
+            } elseif ($time >= 30 && $depositAmount < 200) {
+                return false;
             }
         }
 

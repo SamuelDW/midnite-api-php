@@ -79,6 +79,11 @@ class MidniteController extends AppController
             ]);
         }
 
+        // If the action is withdrawal and the amount will take us below 0, prevent the transaction running
+        if (($transactionMethod === 'withdrawal' && $user->total < 0) || ($transactionMethod === 'withdrawal' && $user->total - $data['amount'] < 0)) {
+            return $this->returnErrorResponse(403, 'Insufficient Funds');
+        }
+
         // Create the transaction and save it
         $transaction = $this->Transactions->newEmptyEntity();
         $entityData = [
@@ -100,6 +105,15 @@ class MidniteController extends AppController
             return $this->response->withStatus(500)->withStringBody($response);
         }
 
+        // as we know the user has to have sufficient funds to make a withdrawal we can confifently add or subtract the amount
+        if ($transactionMethod->name === 'deposit') {
+            $user->total += $transaction->amount;
+        } else {
+            $user->total -= $transaction->amount;
+        }
+
+        $this->Users->save($user);
+
         // Grab three most recent transactions, which includes the one just saved. Only need to check the most recent three, don't need to grab the entire list.
         $transactionsByUser = $this->Transactions->find()->where([
             'user_id' => $user->id,
@@ -111,7 +125,6 @@ class MidniteController extends AppController
         ])->orderByDesc('Transactions.id')->limit(3)->all()->toArray();
 
         $allDepositsByUser = $this->Transactions->find()->where([
-            'transaction_type_id' => TransactionTypesTable::DEPOSIT_ID,
             'user_id' => $user->id
         ])->orderByDesc('Transactions.id')->all()->toArray();
 

@@ -5,7 +5,8 @@ This technical test is to build an API that takes in a user id, action and amoun
 ## Assumptions 
 
 1. That the user_id may not exist, in which case, this needs to be handled
-3. Time is in seconds
+2. Time is in seconds
+3. That for code 123, it does not matter if the deposit amount is not consecutive, if it fits into a 30 second window, it should error
 
 ## Setting the project up
 
@@ -61,20 +62,25 @@ Transactions for recording user transactions
 
 ### How I approached this
 
-1. Define what information needed recording to be able to complete checks.
+1. Define what information needed recording to be able to complete checks. Found this would a users table, a transaction types table, and a transactions table at minimum
 2. Setup the CakePHP project.
 3. Get the initial request working, confirming that the event is being hit.
 4. Start writing the tests for expected responses and expected failures
+5. Started writing defensively, making sure that values are as expected, and returning an error response if something didn't match. 
+6. Started on the checks, I started with the easiest, code 1100, as this only depended on the current input. Then I followed with 30 and 300, as these both depended on deposits and withdrawals consecutively, which was easier to implement with a limit on transactions pulled from the database.
 
 
 ### Issues and challenges. 
 1. No idea why, a new project wasn't allowing the type hinting to function properly.
 2. The deposit in a certain amount of time, I've assumed this was in seconds, rather than anything else, if it was in milliseconds, of course the function that deals with this could be handled to deal with milliseconds, or a boolean flag to determine time frames
+3. Alert Codes table, whilst I thought it might be important, I actually discovered that I couldn't find a use for it that would be effective more so than what was added
+4. Code 123 was a bit of a puzzle. On the one hand, part of it was simple, if the transaction most recent is a deposit and is above 200, its an alert, if it isn't, how does one calculate it. I
+dealt with this by adding the time from either transaction types to a counter, and only adding the amount to the limit if the transaction is a deposit. 
 
 
 ### Possible Improvements
 
-1. Could potentially do the transaction and in the background check the account, utilising a 202 response and return the full response after it has done processing
+1. Could potentially do the transaction and in the background check the account, utilising a 202 response and return the full response after it has done processing, however that might require additional resources that could be better spent elsewhere. If the async parts of JS or Python are enough, should be able to return the full response
 2. In regards to point one, each check could be its own process, and in languages such as Python and JavaScript, make use of async abilities to improve the response speed
 3. Add tests for the Utility functions written.
 4. Make use of the alert codes table is one possibility, however, given the conditions need to be checked manually, it may be easier to remove this table.
