@@ -27,6 +27,8 @@ This technical test is to build an API that takes in a user id, action and amoun
 
 5. Tests can be run with composer test
 
+6. I ran the curl command as `curl -X POST http://localhost/midnite-api-php/event -H 'Content-Type: application/json' -d '{"type": "deposit", "amount": "42.00", "user_id": 1, "time": 1}`.
+
 
 ## Routes
 
