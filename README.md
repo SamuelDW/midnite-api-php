@@ -6,7 +6,8 @@ This technical test is to build an API that takes in a user id, action and amoun
 
 1. That the user_id may not exist, in which case, this needs to be handled
 2. Time is in seconds
-3. That for code 123, it does not matter if the deposit amount is not consecutive, if it fits into a 30 second window, it should error
+3. That for code 123, it does not matter if the deposit amount is not consecutive, if it fits into a 30 second window, it should error. Withdrawals still count towards the time limit
+4. Users should not be able to withdraw into a negative balance.
 
 ## Setting the project up
 
@@ -71,7 +72,7 @@ Transactions for recording user transactions
 
 
 ### Issues and challenges. 
-1. No idea why, a new project wasn't allowing the type hinting to function properly.
+1. No idea why, a new project wasn't allowing the type hinting to function properly. Not like usual, though I have recently switched linting tools so this may be the issue. Doesn't affect functionality
 2. The deposit in a certain amount of time, I've assumed this was in seconds, rather than anything else, if it was in milliseconds, of course the function that deals with this could be handled to deal with milliseconds, or a boolean flag to determine time frames
 3. Alert Codes table, whilst I thought it might be important, I actually discovered that I couldn't find a use for it that would be effective more so than what was added
 4. Code 123 was a bit of a puzzle. On the one hand, part of it was simple, if the transaction most recent is a deposit and is above 200, its an alert, if it isn't, how does one calculate it. I
