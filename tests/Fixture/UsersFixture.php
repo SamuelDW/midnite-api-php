@@ -21,7 +21,7 @@ class UsersFixture extends TestFixture
             [
                 'id' => 1,
                 'name' => 'Lorem ipsum dolor sit amet',
-                'total' => 1,
+                'total' => 100,
                 'created' => '2025-04-17 06:42:02',
                 'modified' => '2025-04-17 06:42:02',
             ],

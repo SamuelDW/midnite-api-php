@@ -20,8 +20,12 @@ class TransactionTypesFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'name' => 'Lorem ipsum dolor sit amet',
+                'name' => 'deposit',
             ],
+            [
+                'id' => 2,
+                'name' => 'withdrawal'
+            ]
         ];
         parent::init();
     }

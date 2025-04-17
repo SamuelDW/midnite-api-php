@@ -91,5 +91,7 @@ class AlertCodes
                 return true;
             }
         }
+
+        return false;
     }
 }

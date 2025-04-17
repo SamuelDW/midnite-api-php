@@ -68,13 +68,13 @@ class TransactionTypesTable extends Table
     /**
      * @param string $name the name of the deposit type
      * 
-     * @return \App\Model\Entity\TransactionType
+     * @return \App\Model\Entity\TransactionType|null
      */
-    public function getTransactionTypeByName(string $name): TransactionType
+    public function getTransactionTypeByName(string $name): ?TransactionType
     {
         return $this->find()
             ->where(['name = :name'])
             ->bind(':name', $name, 'string') // Binding as right hand value is not parameterized and this function may be accessed by third party vendors
-            ->first();
+            ->firstOrFail();
     }
 }
