@@ -117,29 +117,30 @@ class MidniteController extends AppController
             'user_id' => $user->id
         ])->orderByDesc('Transactions.id')->limit(3)->all()->toArray();
 
+        $allDepositsByUser = $this->Transactions->find()->where([
+            'transaction_type_id' => TransactionTypesTable::DEPOSIT_ID,
+            'user_id' => $user->id
+        ])->orderByDesc('Transactions.id')->all()->toArray();
 
-        $response = [];
-        $response['user_id'] = $user->id;
+        // Get booleans for all the codes first, and then check all 
 
-        // Start checking the results against the alert sections
-        $withdrawalAlert = AlertCodes::isOverWithdrawalLimit($transaction, $transactionMethod);
-        $isAllWithdraw = AlertCodes::hasWithdrawnThreeTimesInARow($transactionsByUser, TransactionTypesTable::WITHDRAWAL_ID);
-        $isDepositingGreaterAmounts = $transaction->transaction_type_id === TransactionTypesTable::DEPOSIT_ID
-            ? AlertCodes::hasDepositedGreaterAmountsConsecutively($depositsByUser)
-            : false;
-        $isDepositingTooMuchTooQuick = AlertCodes
-
-        $alertCodes = [];
-
-        if ($isDepositingGreaterAmounts) {
+        if (
+            AlertCodes::hasDepositedGreaterAmountsConsecutively($depositsByUser) &&
+            $transaction->transaction_type_id === TransactionTypesTable::DEPOSIT_ID
+        ) {
             $alertCodes[] = 300;
         }
-        if ($withdrawalAlert) {
+
+        if (AlertCodes::isOverWithdrawalLimit($transaction, $transactionMethod)) {
             $alertCodes[] = 1100;
         }
 
-        if ($isAllWithdraw) {
+        if (AlertCodes::hasWithdrawnThreeTimesInARow($transactionsByUser, TransactionTypesTable::WITHDRAWAL_ID)) {
             $alertCodes[] = 30;
+        }
+
+        if (AlertCodes::isDepositingTooMuchTooQuickly($allDepositsByUser) && $transaction->transaction_type_id === TransactionTypesTable::DEPOSIT_ID) {
+            $alertCodes[] = 123;
         }
 
         $response = json_encode([

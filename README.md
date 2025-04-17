@@ -39,3 +39,18 @@ TransactionTypes is for future transaction types, perhaps there may be more than
 Alert Codes for a list of the type of records to match against
 
 Transactions for recording user transactions
+
+
+### How I approached this
+
+1. Define what information needed recording to be able to complete checks.
+2. Setup the CakePHP project.
+
+
+### Issues and challenges. 
+1. No idea why, a new project wasn't allowing the type hinting to function properly.
+
+
+### Possible Improvements
+
+1. Could potentially do the transaction and in the background check the account, utilising a 202 response

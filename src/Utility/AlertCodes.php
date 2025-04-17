@@ -68,8 +68,28 @@ class AlertCodes
      * @param \App\Model\Entity\Transaction[] $transactions
      * @return bool
      */
-    public function isDepositingTooMuchTooQuickly(array $transactions): void
+    public static function isDepositingTooMuchTooQuickly(array $transactions): bool
     {
+        if (count($transactions) === 0) {
+            return false;
+        }
 
+        // If the first deposit is too much, don't waste time looping
+        if ($transactions[0]->amount > 200) {
+            return true;
+        }
+
+        $time = 0;
+        $depositAmount = 0;
+
+        foreach ($transactions as $transaction) {
+            $time += $transaction->time;
+            $depositAmount += $transaction->amount;
+
+            // as soon as time is 30 or more and amount is over 200 return
+            if ($time >= 30 && $depositAmount > 200) {
+                return true;
+            }
+        }
     }
 }
