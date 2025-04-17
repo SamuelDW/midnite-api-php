@@ -50,6 +50,7 @@ Expected Response
     "alerts": true,
     "alert_codes": [1100, 123]
 }
+```
 
 ## Database Models
 I will create 4 tables, Users, TransactionTypes, Transactions and AlertCodes
@@ -71,8 +72,9 @@ Transactions for recording user transactions
 3. Get the initial request working, confirming that the event is being hit.
 4. Start writing the tests for expected responses and expected failures
 5. Started writing defensively, making sure that values are as expected, and returning an error response if something didn't match. 
-6. Started on the checks, I started with the easiest, code 1100, as this only depended on the current input. Then I followed with 30 and 300, as these both depended on deposits and withdrawals consecutively, which was easier to implement with a limit on transactions pulled from the database.
+6. Started on the checks, I started with the easiest, code 1100, as this only depended on the current input. Then I followed with 30 and 300, as these both depended on deposits and withdrawals consecutively, which was easier to implement with a limit on transactions pulled from the database. Finished with the time limited transactions, not sure how well this could have been done. Does seem to work though so I think it fits the test case.
 7. Finished off all the tests for the tables
+8. Read through the brief again, checking I haven't missed anything.
 
 
 ### Issues and challenges. 
@@ -89,3 +91,4 @@ dealt with this by adding the time from either transaction types to a counter, a
 2. In regards to point one, each check could be its own process, and in languages such as Python and JavaScript, make use of async abilities to improve the response speed
 3. Add tests for the Utility functions written.
 4. Make use of the alert codes table is one possibility, however, given the conditions need to be checked manually, it may be easier to remove this table.
+5. It is possible that attempted transactions may also wish to be recorded, in which case. an additional boolean field could be added to transactions to show success or failure. This may be useful for recording purposes. Methods would need to be updated to account for the new field to prevent alert codes being incorrectly generated.
