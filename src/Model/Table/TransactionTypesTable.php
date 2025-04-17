@@ -28,6 +28,11 @@ use \App\Model\Entity\TransactionType;
  */
 class TransactionTypesTable extends Table
 {
+
+    public const DEPOSIT_ID = 1;
+    public const WITHDRAWAL_ID = 2;
+
+    
     /**
      * Initialize method
      *

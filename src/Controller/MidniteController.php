@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\TransactionTypesTable;
+use App\Utility\AlertCodes;
 use Cake\View\JsonView;
 use Exception;
+use Cake\Http\Exception\BadRequestException;
 
 /**
  * 
@@ -29,10 +32,10 @@ class MidniteController extends AppController
      */
     private $Transactions;
 
-    // public function viewClasses(): array
-    // {
-    //     return [JsonView::class];
-    // }
+    public function viewClasses(): array
+    {
+        return [JsonView::class];
+    }
 
     /**
      * @inheritDoc
@@ -51,10 +54,16 @@ class MidniteController extends AppController
         $this->request->allowMethod(['post']);
 
         $data = $this->request->getData();
-        
+
+        // Check all fields are present, otherwise throw an error
+        if (empty($data['user_id']) || empty($data['type']) || empty($data['amount']) || empty($data['time'])) {
+            throw new BadRequestException('Missing required fields: Fields neeed are user_id, type, amount and time');
+        }
+
         $userId = $data['user_id'];
         $transactionType = $data['type'];
 
+        // Locate the user, otherwise throw not found
         try {
             $user = $this->Users->get($userId);
         } catch (Exception $e) {
@@ -65,6 +74,7 @@ class MidniteController extends AppController
             return $this->response->withStatus(404)->withStringBody($response);
         }
 
+        // Determine if the transaction type is an allowed method
         try {
             $transactionMethod = $this->TransactionTypes->getTransactionTypeByName($transactionType);
         } catch (Exception $e) {
@@ -76,6 +86,7 @@ class MidniteController extends AppController
             return $this->response->withStatus(404)->withStringBody($response);
         }
 
+        // Create the transaction and save it
         $transaction = $this->Transactions->newEmptyEntity();
         $entityData = [
             'user_id' => $user->id,
@@ -86,10 +97,57 @@ class MidniteController extends AppController
 
         $transaction = $this->Transactions->patchEntity($transaction, $entityData);
 
-        if ($this->Transactions->save($transaction)) {
-            dd('Great!');
+        if (!$this->Transactions->save($transaction)) {
+            $response = json_encode([
+                'error' => 500,
+                'message' => 'Could not save transaction',
+                'errors' => $transaction->getErrors(),
+            ]);
+
+            return $this->response->withStatus(500)->withStringBody($response);
         }
 
-        dd($transaction);
+        // Grab three most recent transactions, which includes the one just saved. Only need to check the most recent three, don't need to grab the entire list.
+        $transactionsByUser = $this->Transactions->find()->where([
+            'user_id' => $user->id,
+        ])->orderByDesc('Transactions.id')->limit(3)->all()->toArray();
+
+        $depositsByUser = $this->Transactions->find()->where([
+            'transaction_type_id' => TransactionTypesTable::DEPOSIT_ID,
+            'user_id' => $user->id
+        ])->orderByDesc('Transactions.id')->limit(3)->all()->toArray();
+
+
+        $response = [];
+        $response['user_id'] = $user->id;
+
+        // Start checking the results against the alert sections
+        $withdrawalAlert = AlertCodes::isOverWithdrawalLimit($transaction, $transactionMethod);
+        $isAllWithdraw = AlertCodes::hasWithdrawnThreeTimesInARow($transactionsByUser, TransactionTypesTable::WITHDRAWAL_ID);
+        $isDepositingGreaterAmounts = $transaction->transaction_type_id === TransactionTypesTable::DEPOSIT_ID
+            ? AlertCodes::hasDepositedGreaterAmountsConsecutively($depositsByUser)
+            : false;
+        $isDepositingTooMuchTooQuick = AlertCodes
+
+        $alertCodes = [];
+
+        if ($isDepositingGreaterAmounts) {
+            $alertCodes[] = 300;
+        }
+        if ($withdrawalAlert) {
+            $alertCodes[] = 1100;
+        }
+
+        if ($isAllWithdraw) {
+            $alertCodes[] = 30;
+        }
+
+        $response = json_encode([
+            'user_id' => $user->id,
+            'alert' => !empty($alertCodes),
+            'alert_codes' => empty($alertCodes) ? [] : $alertCodes
+        ]);
+
+        return $this->response->withStringBody($response)->withStatus(200)->withType('application/json');
     }
 }
