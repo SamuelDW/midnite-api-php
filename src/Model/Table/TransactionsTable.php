@@ -97,4 +97,33 @@ class TransactionsTable extends Table
 
         return $rules;
     }
+    /**
+     * Summary of getTransactions
+     * @param int $userId
+     * @param int|null $limit
+     * @param int|null $transactionTypeId
+     * @return array
+     */
+    public function getTransactions(int $userId, ?int $limit = null, ?int $transactionTypeId = null): array
+    {
+        $query = $this->find()
+            ->where([
+                'Transactions.user_id = :userId'
+            ])
+            ->bind(':userId', $userId, 'integer')
+            ->orderByDesc('Transactions.id');
+
+        if ($transactionTypeId) {
+            $query->where([
+                'Transactions.transaction_type_id = :transactionTypeId'
+            ])
+            ->bind(':transactionTypeId', $transactionTypeId, 'integer');
+        }
+
+        if ($limit) {
+            $query->limit($limit);
+        }
+
+        return $query->all()->toArray();
+    }
 }

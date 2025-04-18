@@ -115,18 +115,9 @@ class MidniteController extends AppController
         $this->Users->save($user);
 
         // Grab three most recent transactions, which includes the one just saved. Only need to check the most recent three, don't need to grab the entire list.
-        $transactionsByUser = $this->Transactions->find()->where([
-            'user_id' => $user->id,
-        ])->orderByDesc('Transactions.id')->limit(3)->all()->toArray();
-
-        $depositsByUser = $this->Transactions->find()->where([
-            'transaction_type_id' => TransactionTypesTable::DEPOSIT_ID,
-            'user_id' => $user->id
-        ])->orderByDesc('Transactions.id')->limit(3)->all()->toArray();
-
-        $allDepositsByUser = $this->Transactions->find()->where([
-            'user_id' => $user->id
-        ])->orderByDesc('Transactions.id')->all()->toArray();
+        $transactionsByUser = $this->Transactions->getTransactions($user->id, 3);
+        $depositsByUser = $this->Transactions->getTransactions($user->id, 3, TransactionTypesTable::DEPOSIT_ID);
+        $allDepositsByUser = $this->Transactions->getTransactions($user->id);
 
         // Get booleans for all the codes first, and then check all 
 
